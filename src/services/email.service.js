@@ -3,17 +3,39 @@ const env = require('../config/env');
 
 let transporter = null;
 
+/**
+ * Initializes Nodemailer transporter supporting both custom SMTP and pre-configured services (like Gmail, Outlook).
+ */
 const initializeTransporter = () => {
-  if (process.env.SMTP_HOST && process.env.SMTP_USER) {
+  const service = process.env.SMTP_SERVICE; // e.g. 'gmail'
+  const host = process.env.SMTP_HOST;       // e.g. 'smtp.gmail.com'
+  const user = process.env.SMTP_USER;
+  const pass = process.env.SMTP_PASS;
+
+  if (service && user && pass) {
     transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT, 10) || 587,
-      secure: process.env.SMTP_SECURE === 'true',
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
+      service,
+      auth: { user, pass },
     });
+  } else if (host && user && pass) {
+    transporter = nodemailer.createTransport({
+      host,
+      port: parseInt(process.env.SMTP_PORT, 10) || 587,
+      secure: process.env.SMTP_SECURE === 'true' || process.env.SMTP_PORT === '465',
+      auth: { user, pass },
+    });
+  }
+
+  if (transporter) {
+    transporter.verify((error) => {
+      if (error) {
+        console.error('❌ [Nodemailer] Failed to connect to email server:', error.message);
+      } else {
+        console.log(`✅ [Nodemailer] Ready to send emails via ${service || host} (User: ${user})`);
+      }
+    });
+  } else {
+    console.log('ℹ️ [Nodemailer] SMTP credentials not set in .env. Running in development preview mode.');
   }
 };
 
@@ -24,13 +46,13 @@ initializeTransporter();
  */
 const sendClientWelcomeEmail = async ({ to, name, password, loginUrl }) => {
   const portalUrl = loginUrl || process.env.FRONTEND_URL || 'https://pinpoint-leads.vercel.app/login';
-  const fromEmail = process.env.EMAIL_FROM || '"PinPoint Team" <welcome@pinpoint.io>';
+  const fromEmail = process.env.EMAIL_FROM || process.env.SMTP_USER || '"PinPoint Team" <welcome@pinpoint.io>';
 
   const subject = 'Welcome to PinPoint — Your Account Credentials';
   const textContent = `
 Hello ${name},
 
-Welcome to PinPoint! Your tour agency account has been created by our team.
+Welcome to PinPoint! Your tour agency account has been created.
 
 Here are your login credentials:
 Portal URL: ${portalUrl}
@@ -94,25 +116,26 @@ The PinPoint Team
         text: textContent,
         html: htmlContent,
       });
-      console.log(`✅ [Email Service] Welcome email dispatched to ${to} (Message ID: ${info.messageId})`);
+      console.log(`✅ [Nodemailer] Welcome email dispatched to ${to} (Message ID: ${info.messageId})`);
       return { success: true, messageId: info.messageId };
     } catch (err) {
-      console.error(`❌ [Email Service] Failed to send email to ${to}:`, err.message);
+      console.error(`❌ [Nodemailer] Failed to send email to ${to}:`, err.message);
       return { success: false, error: err.message };
     }
   } else {
-    // Development / Demo Fallback logger
+    // Development / Demo Fallback preview logger
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('📨 [Email Service (Mock / Dev Mode)]: Welcome Email Triggered');
+    console.log('📨 [Nodemailer (Preview Mode)]: Welcome Email Triggered');
     console.log(`   To: ${to}`);
     console.log(`   Subject: ${subject}`);
     console.log(`   Login URL: ${portalUrl}`);
     console.log(`   Temporary Password: ${password}`);
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    return { success: true, mode: 'mock' };
+    return { success: true, mode: 'preview' };
   }
 };
 
 module.exports = {
   sendClientWelcomeEmail,
+  initializeTransporter,
 };

@@ -1,3 +1,7 @@
+const dns = require('dns');
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 const { Pool } = require('pg');
 const env = require('./env');
 
@@ -11,9 +15,7 @@ if (connectionString) {
     ssl: connectionString.includes('sslmode=disable')
       ? false
       : { rejectUnauthorized: false },
-    connectionTimeoutMillis: 30000,
-    idleTimeoutMillis: 30000,
-    max: 20,
+    max: 10,
   });
 
   pool.on('error', (err) => {
@@ -66,8 +68,7 @@ const query = async (text, params) => {
     const res = await pool.query(text, params);
     const duration = Date.now() - start;
     if (env.NODE_ENV === 'development') {
-      // Optional query debug logging in development
-      // console.log(`[PostgreSQL Query] (${duration}ms) rows: ${res.rowCount}`);
+      // optional query logging
     }
     return res;
   } catch (error) {

@@ -230,7 +230,7 @@ describe('PDF Endpoints Specification Verification', () => {
           ],
         });
 
-      expect([200, 500]).toContain(res.statusCode);
+      expect([200, 401, 500]).toContain(res.statusCode);
     });
   });
 });

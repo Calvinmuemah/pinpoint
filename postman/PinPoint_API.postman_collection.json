@@ -477,6 +477,44 @@
           }
         }
       ]
+    },
+    {
+      "name": "AI Intelligence Agent",
+      "item": [
+        {
+          "name": "Live Intent & Text Analysis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Looking for a 5-day luxury resort in Mombasa for our family vacation next month. Budget is around $2,500. Need recommendations for guided safaris.\",\n  \"source\": \"Reddit\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ai/analyze",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "analyze"]
+            }
+          }
+        },
+        {
+          "name": "Trigger Automated Agent Source Scan",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/ai/scan",
+              "host": ["{{baseUrl}}"],
+              "path": ["ai", "scan"]
+            }
+          }
+        }
+      ]
     }
   ]
 }

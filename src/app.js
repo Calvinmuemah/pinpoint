@@ -47,6 +47,7 @@ app.use('/api/v1/notifications', require('./modules/notifications/routes'));
 app.use('/api/v1/analytics', require('./modules/analytics/routes'));
 app.use('/api/v1/settings', require('./modules/settings/routes'));
 app.use('/api/v1/admin', require('./modules/admin/routes'));
+app.use('/api/v1/ai', require('./ai/ai.routes'));
 
 // Backward compatibility alias for /api/
 app.use('/api/public', require('./modules/public/routes'));
@@ -57,6 +58,7 @@ app.use('/api/notifications', require('./modules/notifications/routes'));
 app.use('/api/analytics', require('./modules/analytics/routes'));
 app.use('/api/settings', require('./modules/settings/routes'));
 app.use('/api/admin', require('./modules/admin/routes'));
+app.use('/api/ai', require('./ai/ai.routes'));
 
 // 404 Route Handler
 app.use((req, res, next) => {

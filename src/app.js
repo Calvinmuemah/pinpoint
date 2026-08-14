@@ -18,6 +18,21 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 // General Rate Limiter
 app.use('/api', apiLimiter);
 
+// Root Status Endpoint
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'PinPoint Backend API is running successfully',
+    version: '1.0.0',
+    environment: env.NODE_ENV,
+    timestamp: new Date().toISOString(),
+    endpoints: {
+      health: '/health',
+      api: '/api/v1',
+    },
+  });
+});
+
 // Health Check Endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });

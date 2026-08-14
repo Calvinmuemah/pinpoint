@@ -15,7 +15,14 @@ describe('PinPoint Backend API Test Suite', () => {
     );
   });
 
-  describe('Health Check', () => {
+  describe('Root and Health Check', () => {
+    it('GET / should return 200 OK and server running info', async () => {
+      const res = await request(app).get('/');
+      expect(res.statusCode).toEqual(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.message).toContain('PinPoint Backend API is running');
+    });
+
     it('GET /health should return 200 OK', async () => {
       const res = await request(app).get('/health');
       expect(res.statusCode).toEqual(200);

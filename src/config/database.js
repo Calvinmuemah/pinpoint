@@ -11,7 +11,7 @@ if (connectionString) {
     ssl: connectionString.includes('sslmode=disable')
       ? false
       : { rejectUnauthorized: false },
-    connectionTimeoutMillis: 10000,
+    connectionTimeoutMillis: 30000,
     idleTimeoutMillis: 30000,
     max: 20,
   });

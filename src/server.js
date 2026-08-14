@@ -16,6 +16,10 @@ const startServer = async () => {
     connectRedis();
   }
 
+  // Initialize 24/7 Automated Background Scraper & AI Agent Scheduler
+  const { startScheduler } = require('./jobs/cron-scheduler');
+  startScheduler();
+
   // Start HTTP Server
   app.listen(PORT, () => {
     console.log(`[Server] PinPoint server is running and listening on http://localhost:${PORT}`);

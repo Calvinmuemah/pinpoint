@@ -13,14 +13,14 @@ const seedData = async () => {
   );
   const subscriptionId = subRes.rows[0].id;
 
-  // Create demo user (password: password123)
-  const passwordHash = await bcrypt.hash('password123', 10);
+  // Create admin user (email: pinadmin@gmail.com, password: pin@2026)
+  const passwordHash = await bcrypt.hash('pin@2026', 10);
   const userRes = await query(
     `INSERT INTO users (name, email, password_hash, role, subscription_id)
      VALUES ($1, $2, $3, $4, $5)
-     ON CONFLICT (email) DO UPDATE SET name = EXCLUDED.name
-     RETURNING id, name, email`,
-    ['PinPoint Admin', 'admin@pinpoint.com', passwordHash, 'admin', subscriptionId]
+     ON CONFLICT (email) DO UPDATE SET password_hash = EXCLUDED.password_hash, role = 'admin'
+     RETURNING id, name, email, role`,
+    ['PinPoint Admin', 'pinadmin@gmail.com', passwordHash, 'admin', subscriptionId]
   );
   const userId = userRes.rows[0].id;
 

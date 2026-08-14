@@ -427,6 +427,56 @@
           }
         }
       ]
+    },
+    {
+      "name": "Admin & Client Management",
+      "item": [
+        {
+          "name": "Onboard New Client Agency",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mombasa Ocean Safari Tours\",\n  \"email\": \"client@mombasaocean.com\",\n  \"subscriptionPlan\": \"Enterprise Plan\",\n  \"price\": 299,\n  \"keywords\": [\n    \"Mombasa trip\",\n    \"Kenya safari\",\n    \"Diani beach luxury\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "clients"]
+            }
+          }
+        },
+        {
+          "name": "Get All Onboarded Clients",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/clients",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "clients"]
+            }
+          }
+        },
+        {
+          "name": "Get Public Contact Inquiries",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/admin/inquiries",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "inquiries"]
+            }
+          }
+        }
+      ]
     }
   ]
 }

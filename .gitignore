@@ -22,6 +22,8 @@ coverage/
 Thumbs.db
 .idea/
 .vscode/
+.~lock.*#
+*.tmp
 
 # Build and Vercel artifacts
 .vercel

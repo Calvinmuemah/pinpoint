@@ -1,0 +1,432 @@
+{
+  "info": {
+    "_postman_id": "pinpoint-backend-api-v1",
+    "name": "PinPoint Backend API",
+    "description": "Comprehensive API collection for PinPoint Backend with automated JWT authentication and all endpoints from the specification.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Submit Contact Inquiry",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fullName\": \"Jane Doe\",\n  \"businessName\": \"Safari Ventures\",\n  \"email\": \"jane@safariventures.com\",\n  \"industry\": \"Tourism\",\n  \"message\": \"We would like to request a demo of the PinPoint platform.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/public/contact",
+              "host": ["{{baseUrl}}"],
+              "path": ["public", "contact"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Authentication & Profile",
+      "item": [
+        {
+          "name": "User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const response = pm.response.json();",
+                  "if (response.success && response.data && response.data.token) {",
+                  "    pm.environment.set('token', response.data.token);",
+                  "    console.log('JWT token automatically set in environment variables');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@pinpoint.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Get User Profile & Billing",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/user/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "profile"]
+            }
+          }
+        },
+        {
+          "name": "Update User Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Calvin Muema\",\n  \"email\": \"admin@pinpoint.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/profile",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "profile"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leads Intelligence",
+      "item": [
+        {
+          "name": "Fetch All Leads",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leads?search=&scoreFilter=Hot&status=New&page=1&limit=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["leads"],
+              "query": [
+                { "key": "search", "value": "" },
+                { "key": "scoreFilter", "value": "Hot" },
+                { "key": "status", "value": "New" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Manually Generate / Intercept Lead",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"details\": \"Looking for a 5-day luxury resort recommendation in Mombasa next month for a family of 4.\",\n  \"destination\": \"Mombasa\",\n  \"travelType\": \"Leisure\",\n  \"budget\": 2500,\n  \"source\": \"Reddit\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leads",
+              "host": ["{{baseUrl}}"],
+              "path": ["leads"]
+            }
+          }
+        },
+        {
+          "name": "Get Lead Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leads/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["leads", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "ENTER_LEAD_UUID_HERE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Update Lead Status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"Contacted\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/leads/:id/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["leads", ":id", "status"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "ENTER_LEAD_UUID_HERE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Toggle Lead Star Flag",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leads/:id/star",
+              "host": ["{{baseUrl}}"],
+              "path": ["leads", ":id", "star"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "ENTER_LEAD_UUID_HERE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Archive / Delete Lead",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leads/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["leads", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "ENTER_LEAD_UUID_HERE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Export Filtered Leads to CSV",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/leads/export?status=New",
+              "host": ["{{baseUrl}}"],
+              "path": ["leads", "export"],
+              "query": [
+                { "key": "status", "value": "New" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "Fetch Notifications",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications?status=Pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications"],
+              "query": [
+                { "key": "status", "value": "Pending" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Delete Notification",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications/:id",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications", ":id"],
+              "variable": [
+                {
+                  "key": "id",
+                  "value": "ENTER_NOTIFICATION_UUID_HERE"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Bulk Clear Notifications",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/notifications?status=Pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["notifications"],
+              "query": [
+                { "key": "status", "value": "Pending" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "item": [
+        {
+          "name": "Get Dashboard Summary Metrics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["analytics", "dashboard"]
+            }
+          }
+        },
+        {
+          "name": "Get Analytics Breakdown",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/analytics/breakdown?timeframe=30d",
+              "host": ["{{baseUrl}}"],
+              "path": ["analytics", "breakdown"],
+              "query": [
+                { "key": "timeframe", "value": "30d" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "item": [
+        {
+          "name": "Get Listener Configuration",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/settings",
+              "host": ["{{baseUrl}}"],
+              "path": ["settings"]
+            }
+          }
+        },
+        {
+          "name": "Update Monitored Keywords",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"keywords\": [\n    \"Mombasa trip\",\n    \"Kenya safari\",\n    \"planning a vacation\",\n    \"Diani beach holiday\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/keywords",
+              "host": ["{{baseUrl}}"],
+              "path": ["settings", "keywords"]
+            }
+          }
+        },
+        {
+          "name": "Toggle Social Sources",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sources\": [\n    {\n      \"id\": \"Reddit\",\n      \"enabled\": true\n    },\n    {\n      \"id\": \"TripAdvisor\",\n      \"enabled\": false\n    },\n    {\n      \"id\": \"Twitter\",\n      \"enabled\": true\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/sources",
+              "host": ["{{baseUrl}}"],
+              "path": ["settings", "sources"]
+            }
+          }
+        },
+        {
+          "name": "Adjust AI Scoring Rules",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"scoringRules\": [\n    {\n      \"criterion\": \"Specific destination mentioned\",\n      \"weight\": 25,\n      \"description\": \"Lead explicitly mentions a travel destination\",\n      \"enabled\": true\n    },\n    {\n      \"criterion\": \"Travel date or timeframe provided\",\n      \"weight\": 25,\n      \"description\": \"Lead provides specific travel timeframe\",\n      \"enabled\": true\n    },\n    {\n      \"criterion\": \"Budget details provided\",\n      \"weight\": 20,\n      \"description\": \"Lead provides a budget figure\",\n      \"enabled\": true\n    },\n    {\n      \"criterion\": \"Explicitly looking for tour operator\",\n      \"weight\": 30,\n      \"description\": \"Lead asks for recommendations or quotes\",\n      \"enabled\": true\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/settings/scoring-rules",
+              "host": ["{{baseUrl}}"],
+              "path": ["settings", "scoring-rules"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

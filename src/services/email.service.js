@@ -7,8 +7,8 @@ let transporter = null;
  * Initializes Nodemailer transporter supporting both custom SMTP and pre-configured services (like Gmail, Outlook).
  */
 const initializeTransporter = () => {
-  const service = process.env.SMTP_SERVICE; // e.g. 'gmail'
-  const host = process.env.SMTP_HOST;       // e.g. 'smtp.gmail.com'
+  const service = process.env.SMTP_SERVICE;
+  const host = process.env.SMTP_HOST;
   const user = process.env.SMTP_USER;
   const pass = process.env.SMTP_PASS;
 
@@ -29,9 +29,9 @@ const initializeTransporter = () => {
   if (transporter) {
     transporter.verify((error) => {
       if (error) {
-        console.error('❌ [Nodemailer] Failed to connect to email server:', error.message);
+        console.error('[Nodemailer] Failed to connect to email server:', error.message);
       } else {
-        console.log(`✅ [Nodemailer] Ready to send emails via ${service || host} (User: ${user})`);
+        console.log(`[Nodemailer] Ready to send emails via ${service || host} (User: ${user})`);
       }
     });
   } else {
@@ -83,7 +83,7 @@ The PinPoint Team
 </head>
 <body>
   <div class="card">
-    <div class="logo">📍 PinPoint</div>
+    <div class="logo">PinPoint</div>
     <h2>Welcome to PinPoint, ${name}!</h2>
     <p>Your agency account is now active. You can start receiving AI-intercepted high-intent travel leads directly in your dashboard.</p>
     
@@ -116,10 +116,10 @@ The PinPoint Team
         text: textContent,
         html: htmlContent,
       });
-      console.log(`✅ [Nodemailer] Welcome email dispatched to ${to} (Message ID: ${info.messageId})`);
+      console.log(`[Nodemailer] Welcome email dispatched to ${to} (Message ID: ${info.messageId})`);
       return { success: true, messageId: info.messageId };
     } catch (err) {
-      console.error(`❌ [Nodemailer] Failed to send email to ${to}:`, err.message);
+      console.error(`[Nodemailer] Failed to send email to ${to}:`, err.message);
       return { success: false, error: err.message };
     }
   } else {

@@ -19,10 +19,10 @@ if (connectionString) {
   });
 
   pool.on('error', (err) => {
-    console.error('❌ [PostgreSQL] Unexpected error on idle client in pool:', err.message);
+    console.error('[PostgreSQL] Unexpected error on idle client in pool:', err.message);
   });
 } else {
-  console.warn('⚠️ [PostgreSQL] DATABASE_URL is not set. Database pool not initialized.');
+  console.warn('[PostgreSQL] DATABASE_URL is not set. Database pool not initialized.');
 }
 
 /**
@@ -30,7 +30,7 @@ if (connectionString) {
  */
 const testDatabaseConnection = async () => {
   if (!pool) {
-    console.warn('⚠️ [PostgreSQL] Database pool not initialized. Please configure DATABASE_URL in .env');
+    console.warn('[PostgreSQL] Database pool not initialized. Please configure DATABASE_URL in .env');
     return false;
   }
 

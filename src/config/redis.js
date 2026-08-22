@@ -8,7 +8,7 @@ let redisClient = null;
  */
 const connectRedis = () => {
   if (!env.REDIS_URL) {
-    console.warn('⚠️ [Redis] REDIS_URL is not set in .env. Redis features are disabled.');
+    console.warn('[Redis] REDIS_URL is not set in .env. Redis features are disabled.');
     return null;
   }
 

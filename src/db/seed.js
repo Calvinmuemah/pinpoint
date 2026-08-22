@@ -38,7 +38,7 @@ const seedData = async () => {
       ['PinPoint Admin', 'pinadmin@gmail.com', passwordHash, 'admin', subscriptionId]
     );
     const userId = userRes.rows[0].id;
-    console.log(`✅ [Seed] Admin account created/updated: ${userRes.rows[0].email} (Role: ${userRes.rows[0].role})`);
+    console.log(`[Seed] Admin account created/updated: ${userRes.rows[0].email} (Role: ${userRes.rows[0].role})`);
 
     // 3. Create default listener keywords
     const keywords = ['Mombasa trip', 'Kenya safari', 'planning a vacation', 'Diani luxury beach'];

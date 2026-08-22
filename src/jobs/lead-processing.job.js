@@ -13,7 +13,7 @@ const businessSearchTool = require('../ai/tools/business-search.tool');
 const runLeadProcessingCycle = async () => {
   const startTime = Date.now();
   console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(`⏰ [Background Job] Starting Automated 24/7 Lead Processing Cycle at ${new Date().toISOString()}`);
+  console.log(`... [Background Job] Starting Automated 24/7 Lead Processing Cycle at ${new Date().toISOString()}`);
 
   let totalUsersScanned = 0;
   let totalRawHarvested = 0;
@@ -32,7 +32,7 @@ const runLeadProcessingCycle = async () => {
     totalUsersScanned = activeUsers.length;
 
     for (const user of activeUsers) {
-      console.log(`🔍 [Job Worker] Processing keywords for user: ${user.name} (${user.email})`);
+      console.log(`... [Job Worker] Processing keywords for user: ${user.name} (${user.email})`);
 
       // 2. Fetch user's active keywords
       const kwRes = await query(
@@ -108,13 +108,13 @@ const runLeadProcessingCycle = async () => {
             );
 
             totalLeadsCreated++;
-            console.log(`✅ [Lead Created] Lead ID: ${createdLead.id} for ${user.email} (${createdLead.score_category} - ${createdLead.intent_score} pts)`);
+            console.log(`[Lead Created] Lead ID: ${createdLead.id} for ${user.email} (${createdLead.score_category} - ${createdLead.intent_score} pts)`);
           }
         }
       }
     }
   } catch (error) {
-    console.error('❌ [Background Job Error]:', error.message);
+    console.error('[Background Job Error]:', error.message);
   }
 
   const durationMs = Date.now() - startTime;

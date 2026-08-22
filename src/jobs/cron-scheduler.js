@@ -13,15 +13,15 @@ const startScheduler = () => {
   const cronExpression = process.env.CRON_SCHEDULE || '*/15 * * * *';
 
   if (!cron.validate(cronExpression)) {
-    console.error(`❌ [Cron Scheduler] Invalid cron expression: "${cronExpression}"`);
+    console.error(`[Cron Scheduler] Invalid cron expression: "${cronExpression}"`);
     return;
   }
 
-  console.log(`⏰ [Cron Scheduler] Initialized 24/7 Automated Scraper & AI Agent (Schedule: "${cronExpression}")`);
+  console.log(`[Cron Scheduler] Initialized 24/7 Automated Scraper & AI Agent (Schedule: "${cronExpression}")`);
 
   scheduledTask = cron.schedule(cronExpression, async () => {
     if (isJobRunning) {
-      console.log('⚠️ [Cron Scheduler] Previous cycle is still active. Skipping tick.');
+      console.log('[Cron Scheduler] Previous cycle is still active. Skipping tick.');
       return;
     }
 
@@ -29,7 +29,7 @@ const startScheduler = () => {
     try {
       await runLeadProcessingCycle();
     } catch (err) {
-      console.error('❌ [Cron Scheduler Error]:', err.message);
+      console.error('[Cron Scheduler Error]:', err.message);
     } finally {
       isJobRunning = false;
     }

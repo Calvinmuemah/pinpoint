@@ -18,7 +18,7 @@ class TravelIntelligenceAgent {
    * Processes a single raw observation text using Gemini AI
    */
   async processObservation(observationText, source = 'Social/Web') {
-    console.log(`🤖 [Travel Intelligence Agent] Analyzing observation from ${source}...`);
+    console.log(`[Travel Intelligence Agent] Analyzing observation from ${source}...`);
 
     // Step 1: Extract intent & score lead with Gemini
     const intelligence = await leadScoringService.processContent(observationText);
@@ -53,7 +53,7 @@ class TravelIntelligenceAgent {
    * Full agent scan: Discovers live social/web posts based on user's active keywords and creates leads
    */
   async scanSourcesForUser(userId) {
-    console.log(`🚀 [Travel Intelligence Agent] Launching automated keyword & source scan for user: ${userId}`);
+    console.log(`[Travel Intelligence Agent] Launching automated keyword & source scan for user: ${userId}`);
 
     // Fetch active keywords for this user
     let keywords = ['Mombasa trip', 'Kenya safari'];
@@ -76,7 +76,7 @@ class TravelIntelligenceAgent {
         sources = srcRes.rows.map((r) => r.source);
       }
     } catch (err) {
-      console.warn('⚠️ [Travel Intelligence Agent] Using default keywords for scan:', err.message);
+      console.warn('[Travel Intelligence Agent] Using default keywords for scan:', err.message);
     }
 
     const generatedLeads = [];

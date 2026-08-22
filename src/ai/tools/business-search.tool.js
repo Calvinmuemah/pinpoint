@@ -51,7 +51,7 @@ const tourOperatorsDatabase = [
 ];
 
 const search = async (destination = 'Mombasa', travelType = 'Leisure') => {
-  console.log(`🏢 [AI Tool: BusinessSearch] Finding matching tour operators for ${destination} (${travelType})`);
+  console.log(`[AI Tool: BusinessSearch] Finding matching tour operators for ${destination} (${travelType})`);
 
   const matches = tourOperatorsDatabase.filter(
     (b) => b.destination.toLowerCase() === destination.toLowerCase() ||

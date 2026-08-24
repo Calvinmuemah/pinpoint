@@ -1,81 +1,75 @@
+const { query } = require('../../config/database');
+
 /**
  * Business Search Tool for PinPoint Travel Agent
- * Matches identified destination & travel type with verified local tour operators.
+ * Dynamically matches identified destination & travel type with registered client agencies in PostgreSQL.
  */
-const tourOperatorsDatabase = [
-  {
-    destination: 'Mombasa',
-    travelType: 'Leisure',
-    name: 'Mombasa Coastal Safaris & Marine Tours',
-    rating: 4.9,
-    contact: 'info@mombasacoastalsafaris.co.ke',
-    phone: '+254 700 112 233',
-    services: ['Luxury Beach Resorts', 'Wasini Dolphin Dhow', 'Old Town Guided Tours'],
-  },
-  {
-    destination: 'Mombasa',
-    travelType: 'Safari',
-    name: 'Tsavo & Coastal Wildlife Expeditions',
-    rating: 4.8,
-    contact: 'bookings@tsavocoastal.com',
-    phone: '+254 711 445 566',
-    services: ['Tsavo East/West Game Drives', 'Shimba Hills Excursions', 'Private 4x4 Land Cruisers'],
-  },
-  {
-    destination: 'Diani',
-    travelType: 'Leisure',
-    name: 'Diani White Sands & Skydiving Escapes',
-    rating: 4.9,
-    contact: 'hello@dianiwritesands.com',
-    phone: '+254 722 889 900',
-    services: ['Kite Surfing', 'Private Villas', 'Chale Island Day Tours'],
-  },
-  {
-    destination: 'Maasai Mara',
-    travelType: 'Safari',
-    name: 'Mara Big Five Luxury Tented Safaris',
-    rating: 5.0,
-    contact: 'safari@marabigfive.com',
-    phone: '+254 733 990 011',
-    services: ['Hot Air Balloon Safaris', 'Great Migration Tracking', 'Fly-in Safaris'],
-  },
-  {
-    destination: 'Nairobi',
-    travelType: 'Business',
-    name: 'Nairobi Executive Transfers & Day Tours',
-    rating: 4.7,
-    contact: 'info@nairobiexecutive.com',
-    phone: '+254 701 556 677',
-    services: ['Nairobi National Park', 'Giraffe Centre & Karen Blixen', 'Airport VIP VIP transfers'],
-  },
-];
-
 const search = async (destination = 'Mombasa', travelType = 'Leisure') => {
-  console.log(`[AI Tool: BusinessSearch] Finding matching tour operators for ${destination} (${travelType})`);
+  console.log(`🏢 [AI Tool: BusinessSearch] Dynamically matching registered agencies for ${destination} (${travelType})...`);
 
-  const matches = tourOperatorsDatabase.filter(
-    (b) => b.destination.toLowerCase() === destination.toLowerCase() ||
-           b.travelType.toLowerCase() === travelType.toLowerCase()
-  );
+  try {
+    // 1. Fetch real onboarded client agencies from PostgreSQL
+    const sql = `
+      SELECT u.id, u.name, u.email,
+             s.name as plan_name,
+             COALESCE(
+               array_agg(DISTINCT lk.keyword) FILTER (WHERE lk.keyword IS NOT NULL),
+               '{}'
+             ) as monitored_keywords
+      FROM users u
+      LEFT JOIN subscriptions s ON u.subscription_id = s.id
+      LEFT JOIN listener_keywords lk ON u.id = lk.user_id AND lk.enabled = true
+      WHERE u.role = 'client'
+      GROUP BY u.id, u.name, u.email, s.name
+      LIMIT 10;
+    `;
+    const res = await query(sql);
 
-  if (matches.length > 0) {
-    return matches;
+    if (res && res.rows.length > 0) {
+      // Find client agencies whose monitored keywords include the destination
+      const destLower = destination.toLowerCase();
+      const matchedClients = res.rows.filter((c) =>
+        c.monitored_keywords.some((kw) => kw.toLowerCase().includes(destLower))
+      );
+
+      if (matchedClients.length > 0) {
+        return matchedClients.map((c) => ({
+          agencyId: c.id,
+          name: c.name,
+          email: c.email,
+          plan: c.plan_name,
+          matchedDestination: destination,
+          matchedTravelType: travelType,
+          status: 'Active Agency',
+        }));
+      }
+
+      // Return all registered client agencies if no specific keyword match
+      return res.rows.map((c) => ({
+        agencyId: c.id,
+        name: c.name,
+        email: c.email,
+        plan: c.plan_name,
+        matchedDestination: destination,
+        matchedTravelType: travelType,
+        status: 'Active Agency',
+      }));
+    }
+  } catch (err) {
+    console.warn('⚠️ [BusinessSearch] DB query skipped/failed:', err.message);
   }
 
-  // Fallback dynamic generator for other destinations
+  // Fallback representation if no client agencies are onboarded yet
   return [
     {
-      destination,
-      travelType,
-      name: `${destination} Premier Tours & Safaris`,
-      rating: 4.8,
-      contact: `contact@${destination.toLowerCase()}premiertours.com`,
-      services: ['Custom Private Itineraries', 'Hotel Bookings', 'Airport Transfers'],
+      name: `${destination} Tour Agency Partner`,
+      matchedDestination: destination,
+      matchedTravelType: travelType,
+      status: 'Awaiting Onboarded Agency',
     },
   ];
 };
 
 module.exports = {
   search,
-  tourOperatorsDatabase,
 };

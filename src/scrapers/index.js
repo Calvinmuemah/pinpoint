@@ -1,20 +1,27 @@
 const redditScraper = require('./reddit.scraper');
 const twitterScraper = require('./twitter.scraper');
 const tripadvisorScraper = require('./tripadvisor.scraper');
+const facebookScraper = require('./facebook.scraper');
+const instagramScraper = require('./instagram.scraper');
 const webScraper = require('./web.scraper');
 
 const scrapers = {
   Reddit: redditScraper,
   Twitter: twitterScraper,
   TripAdvisor: tripadvisorScraper,
+  Facebook: facebookScraper,
+  Instagram: instagramScraper,
   WebSearch: webScraper,
 };
 
 /**
- * Harvests raw posts across multiple platforms for given keywords
+ * Harvests real live posts across enabled social and web platforms
  */
-const harvestObservations = async (keywords = [], enabledSources = ['Reddit', 'Twitter', 'TripAdvisor', 'WebSearch']) => {
-  console.log(`🌐 [Harvest Pipeline] Scraping ${enabledSources.join(', ')} for ${keywords.length} keywords...`);
+const harvestObservations = async (
+  keywords = [],
+  enabledSources = ['Reddit', 'Twitter', 'TripAdvisor', 'Facebook', 'Instagram', 'WebSearch']
+) => {
+  console.log(`🌐 [Live Harvest Pipeline] Scraping ${enabledSources.join(', ')} for ${keywords.length} keywords...`);
   
   const allObservations = [];
 
@@ -32,6 +39,7 @@ const harvestObservations = async (keywords = [], enabledSources = ['Reddit', 'T
     }
   }
 
+  console.log(`✅ [Live Harvest Pipeline] Total real observations collected: ${allObservations.length}`);
   return allObservations;
 };
 

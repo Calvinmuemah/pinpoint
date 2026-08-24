@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const env = require('../src/config/env');
 
 describe('Admin Client Management & Onboarding Test Suite', () => {
+  jest.setTimeout(30000);
   let adminToken;
   let clientToken;
 

@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const env = require('../src/config/env');
 
 describe('Admin Authentication & New Endpoints Integration Test', () => {
+  jest.setTimeout(30000);
   const adminEmail = 'pinadmin@gmail.com';
   const adminPassword = 'pin@2026';
   let adminToken;

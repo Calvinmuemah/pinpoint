@@ -5,19 +5,16 @@ class TripAdvisorScraper extends BaseScraper {
     super('TripAdvisor');
   }
 
+  /**
+   * Scrapes real live TripAdvisor travel forum threads
+   */
   async scrape(keyword) {
-    const term = keyword.toLowerCase();
-
-    return [
-      {
-        source: 'TripAdvisor',
-        externalId: `ta_${term}_${Date.now()}_1`,
-        author: 'Robert G.',
-        text: `Looking for top-rated local operators for ${keyword}. Looking for 4 days safari + 3 days beach resort relaxation. Budget is around $3,500 total.`,
-        url: `https://tripadvisor.com/showtopic-${encodeURIComponent(term)}`,
-        postedAt: new Date().toISOString(),
-      },
+    console.log(`📡 [TripAdvisor Live Scraper] Harvesting real forum threads for: "${keyword}"...`);
+    const searchTerms = [
+      `tripadvisor showtopic ${keyword} hotel recommendations`,
+      `tripadvisor forum ${keyword} safari packages cost`,
     ];
+    return await this.liveHarvest(searchTerms, 4);
   }
 }
 

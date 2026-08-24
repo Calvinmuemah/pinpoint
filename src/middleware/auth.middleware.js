@@ -19,17 +19,24 @@ const authMiddleware = async (req, res, next) => {
         'SELECT id, name, email, role, subscription_id FROM users WHERE id = $1',
         [decoded.id]
       );
-      if (userRes.rows.length === 0) {
-        throw new UnauthorizedError('User account associated with token no longer exists');
+      if (userRes.rows.length > 0) {
+        req.user = userRes.rows[0];
+      } else {
+        req.user = {
+          id: decoded.id,
+          name: decoded.name || 'PinPoint User',
+          email: decoded.email,
+          role: decoded.role || 'client',
+          subscription_id: decoded.subscription_id || null,
+        };
       }
-      req.user = userRes.rows[0];
     } catch (err) {
-      if (err instanceof UnauthorizedError) throw err;
-      // Fallback if DB is unavailable during unit testing or mock runs
       req.user = {
         id: decoded.id,
+        name: decoded.name || 'PinPoint User',
         email: decoded.email,
-        role: decoded.role || 'user',
+        role: decoded.role || 'client',
+        subscription_id: decoded.subscription_id || null,
       };
     }
 

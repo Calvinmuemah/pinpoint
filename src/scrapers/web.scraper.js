@@ -5,19 +5,16 @@ class WebSearchScraper extends BaseScraper {
     super('WebSearch');
   }
 
+  /**
+   * Scrapes real live travel discussion blogs, booking forums, and inquiry websites
+   */
   async scrape(keyword) {
-    const term = keyword.toLowerCase();
-
-    return [
-      {
-        source: 'WebSearch',
-        externalId: `web_${term}_${Date.now()}_1`,
-        author: 'Anonymous Forum User',
-        text: `Planning a holiday for ${keyword} next month. Need quotes for all-inclusive beach resort accommodation and airport transfers.`,
-        url: `https://traveldiscussions.com/p/${encodeURIComponent(term)}`,
-        postedAt: new Date().toISOString(),
-      },
+    console.log(`📡 [WebSearch Live Scraper] Harvesting real discussions across the web for: "${keyword}"...`);
+    const searchTerms = [
+      `${keyword} travel itinerary planning recommendations forum`,
+      `${keyword} luxury safari lodge quotes advice`,
     ];
+    return await this.liveHarvest(searchTerms, 4);
   }
 }
 

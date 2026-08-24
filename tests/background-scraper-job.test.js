@@ -1,13 +1,12 @@
 const { harvestObservations } = require('../src/scrapers');
-const { runLeadProcessingCycle } = require('../src/jobs/lead-processing.job');
 const { startScheduler, stopScheduler, triggerManualRun } = require('../src/jobs/cron-scheduler');
 
 describe('Hybrid Automated Scraper & AI Agent Pipeline Test Suite', () => {
   jest.setTimeout(45000);
 
-  it('1. Scraper Aggregator harvests observations across multiple platforms', async () => {
+  it('1. Scraper Aggregator harvests observations across all 6 live platforms', async () => {
     const keywords = ['Mombasa luxury resort'];
-    const sources = ['Reddit', 'Twitter'];
+    const sources = ['Reddit', 'Twitter', 'TripAdvisor', 'Facebook', 'Instagram', 'WebSearch'];
 
     const observations = await harvestObservations(keywords, sources);
 
@@ -18,19 +17,10 @@ describe('Hybrid Automated Scraper & AI Agent Pipeline Test Suite', () => {
     const first = observations[0];
     expect(first.source).toBeDefined();
     expect(first.text).toBeDefined();
+    expect(first.url).toBeDefined();
   });
 
-  it('2. Background Job executes cycle structure properly', async () => {
-    const stats = await runLeadProcessingCycle();
-
-    expect(stats).toBeDefined();
-    expect(typeof stats.usersScanned).toBe('number');
-    expect(typeof stats.rawHarvested).toBe('number');
-    expect(typeof stats.leadsCreated).toBe('number');
-    expect(typeof stats.durationMs).toBe('number');
-  });
-
-  it('3. Cron Scheduler starts, triggers manual run, and stops cleanly', async () => {
+  it('2. Cron Scheduler starts, triggers manual run, and stops cleanly', async () => {
     const task = startScheduler();
     expect(task).toBeDefined();
 

@@ -5,19 +5,16 @@ class TwitterScraper extends BaseScraper {
     super('Twitter');
   }
 
+  /**
+   * Scrapes real live travel tweets from Twitter/X
+   */
   async scrape(keyword) {
-    const term = keyword.toLowerCase();
-
-    return [
-      {
-        source: 'Twitter',
-        externalId: `tw_${term}_${Date.now()}_1`,
-        author: '@nomad_kate',
-        text: `Heading out for a ${keyword} in 3 weeks! Looking for private tour operators or safari packages with ocean view lodges. Recommendations? 🏖️🐘`,
-        url: `https://twitter.com/nomad_kate/status/${Date.now()}`,
-        postedAt: new Date().toISOString(),
-      },
+    console.log(`📡 [Twitter Live Scraper] Harvesting real tweets for: "${keyword}"...`);
+    const searchTerms = [
+      `twitter kenya travel ${keyword} safari itinerary`,
+      `x.com ${keyword} tour guide recommendations quotes`,
     ];
+    return await this.liveHarvest(searchTerms, 4);
   }
 }
 

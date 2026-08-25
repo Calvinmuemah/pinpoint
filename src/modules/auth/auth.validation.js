@@ -1,4 +1,2 @@
-module.exports = {
-  loginSchema: {},
-  registerSchema: {},
-};
+module.exports = require('./validation');
+

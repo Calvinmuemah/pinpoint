@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const env = require('../config/env');
 const { UnauthorizedError } = require('../utils/errors');
 const { query } = require('../config/database');
+const { isTokenBlacklisted } = require('../config/redis');
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -11,6 +12,13 @@ const authMiddleware = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
+
+    // Check if token has been revoked / logged out
+    const blacklisted = await isTokenBlacklisted(token);
+    if (blacklisted) {
+      throw new UnauthorizedError('Authentication token has been revoked');
+    }
+
     const decoded = jwt.verify(token, env.JWT_SECRET);
 
     // Fetch user from DB if pool is available, or use token payload

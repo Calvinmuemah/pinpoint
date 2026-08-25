@@ -79,8 +79,34 @@ const bootstrapDefaultAdmin = async (adminEmail, passwordHash) => {
   };
 };
 
+const findById = async (id) => {
+  const sql = `
+    SELECT u.id, u.name, u.email, u.password_hash, u.role, u.subscription_id, u.created_at,
+           s.name as subscription_name, s.status as subscription_status
+    FROM users u
+    LEFT JOIN subscriptions s ON u.subscription_id = s.id
+    WHERE u.id = $1;
+  `;
+  const res = await query(sql, [id]);
+  return res.rows[0] || null;
+};
+
+const updatePassword = async (userId, passwordHash) => {
+  const sql = `
+    UPDATE users
+    SET password_hash = $1, updated_at = CURRENT_TIMESTAMP
+    WHERE id = $2
+    RETURNING id, name, email, role, updated_at;
+  `;
+  const res = await query(sql, [passwordHash, userId]);
+  return res.rows[0] || null;
+};
+
 module.exports = {
   findByEmail,
+  findById,
   createUser,
+  updatePassword,
   bootstrapDefaultAdmin,
 };
+

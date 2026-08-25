@@ -135,7 +135,90 @@ The PinPoint Team
   }
 };
 
+/**
+ * Sends a password reset link email with token.
+ */
+const sendPasswordResetEmail = async ({ to, name, resetToken, resetUrl }) => {
+  const portalUrl = resetUrl || `${process.env.FRONTEND_URL || 'https://pinpoint-leads.vercel.app'}/reset-password?token=${resetToken}`;
+  const fromEmail = process.env.EMAIL_FROM || process.env.SMTP_USER || '"PinPoint Team" <support@pinpoint.io>';
+
+  const subject = 'PinPoint — Password Reset Request';
+  const textContent = `
+Hello ${name || 'there'},
+
+We received a request to reset the password for your PinPoint account (${to}).
+
+Click the link below to set a new password:
+${portalUrl}
+
+If you did not request a password reset, you can safely ignore this email. This link will expire in 1 hour.
+
+Best regards,
+The PinPoint Security Team
+`;
+
+  const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #1e293b; padding: 20px; }
+    .card { background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; max-width: 540px; margin: 0 auto; padding: 32px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+    .logo { font-size: 24px; font-weight: 700; color: #0284c7; margin-bottom: 20px; }
+    .btn { display: inline-block; background-color: #0284c7; color: #ffffff !important; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 600; margin-top: 16px; }
+    .footer { font-size: 12px; color: #94a3b8; margin-top: 32px; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">PinPoint</div>
+    <h2>Password Reset Request</h2>
+    <p>Hello ${name || 'there'},</p>
+    <p>We received a request to reset your PinPoint account password. Click the button below to choose a new password:</p>
+    
+    <a href="${portalUrl}" class="btn">Reset My Password</a>
+
+    <p style="margin-top: 24px; font-size: 13px; color: #64748b;">
+      If you did not request this, you can safely ignore this email. This password reset link expires in 1 hour.
+    </p>
+
+    <div class="footer">
+      &copy; 2026 PinPoint Intelligence Inc. All rights reserved.
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+  if (transporter) {
+    try {
+      const info = await transporter.sendMail({
+        from: fromEmail,
+        to,
+        subject,
+        text: textContent,
+        html: htmlContent,
+      });
+      console.log(`[Nodemailer] Password reset email dispatched to ${to} (Message ID: ${info.messageId})`);
+      return { success: true, messageId: info.messageId };
+    } catch (err) {
+      console.error(`[Nodemailer] Failed to send password reset email to ${to}:`, err.message);
+      return { success: false, error: err.message };
+    }
+  } else {
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    console.log('📨 [Nodemailer (Preview Mode)]: Password Reset Email Triggered');
+    console.log(`   To: ${to}`);
+    console.log(`   Reset URL: ${portalUrl}`);
+    console.log(`   Reset Token: ${resetToken}`);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    return { success: true, mode: 'preview', resetToken };
+  }
+};
+
 module.exports = {
   sendClientWelcomeEmail,
+  sendPasswordResetEmail,
   initializeTransporter,
 };
+

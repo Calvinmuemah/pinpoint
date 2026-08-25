@@ -69,7 +69,42 @@ const getRedisClient = () => {
   return redisClient;
 };
 
+/**
+ * Adds a token to the Redis blacklist with a TTL.
+ */
+const blacklistToken = async (token, expiresInSeconds = 86400) => {
+  const client = getRedisClient();
+  if (!client) return false;
+  try {
+    const key = `blacklist:${token}`;
+    await client.set(key, 'revoked', 'EX', Math.max(expiresInSeconds, 60));
+    return true;
+  } catch (err) {
+    console.warn('[Redis] Failed to blacklist token:', err.message);
+    return false;
+  }
+};
+
+/**
+ * Checks if a token is in the Redis blacklist.
+ */
+const isTokenBlacklisted = async (token) => {
+  const client = getRedisClient();
+  if (!client) return false;
+  try {
+    const key = `blacklist:${token}`;
+    const result = await client.get(key);
+    return result === 'revoked';
+  } catch (err) {
+    console.warn('[Redis] Error checking token blacklist:', err.message);
+    return false;
+  }
+};
+
 module.exports = {
   connectRedis,
   getRedisClient,
+  blacklistToken,
+  isTokenBlacklisted,
 };
+

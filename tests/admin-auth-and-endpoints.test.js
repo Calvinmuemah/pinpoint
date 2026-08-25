@@ -116,4 +116,76 @@ describe('Admin Authentication & New Endpoints Integration Test', () => {
       expect([200, 500]).toContain(res.statusCode);
     });
   });
+
+  describe('4. Token Refresh, Logout, and Password Reset Flow', () => {
+    let testRefreshToken;
+
+    beforeAll(() => {
+      testRefreshToken = jwt.sign(
+        { id: '00000000-0000-0000-0000-000000000001', email: adminEmail, role: 'admin' },
+        env.JWT_REFRESH_SECRET,
+        { expiresIn: '7d' }
+      );
+    });
+
+    it('POST /api/v1/auth/refresh returns new token and new refreshToken with valid input', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/refresh')
+        .send({ refreshToken: testRefreshToken });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.token).toBeDefined();
+      expect(res.body.data.refreshToken).toBeDefined();
+    });
+
+    it('POST /api/v1/auth/refresh rejects missing token with 422', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/refresh')
+        .send({});
+
+      expect(res.statusCode).toBe(422);
+      expect(res.body.success).toBe(false);
+    });
+
+    it('POST /api/v1/auth/refresh rejects invalid token with 401', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/refresh')
+        .send({ refreshToken: 'invalid.token' });
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body.success).toBe(false);
+    });
+
+    it('POST /api/v1/auth/logout logs out session cleanly', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/logout')
+        .set('Authorization', `Bearer ${adminToken}`)
+        .send({ refreshToken: testRefreshToken });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.message).toBe('Logged out successfully');
+    });
+
+    it('POST /api/v1/auth/forgot-password sends reset instructions', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/forgot-password')
+        .send({ email: adminEmail });
+
+      expect(res.statusCode).toBe(200);
+      expect(res.body.success).toBe(true);
+      expect(res.body.data.message).toContain('password reset link has been sent');
+    });
+
+    it('POST /api/v1/auth/reset-password rejects invalid token', async () => {
+      const res = await request(app)
+        .post('/api/v1/auth/reset-password')
+        .send({ token: 'fake_token', newPassword: 'newPassword123' });
+
+      expect(res.statusCode).toBe(401);
+      expect(res.body.success).toBe(false);
+    });
+  });
 });
+
